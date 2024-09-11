@@ -1,0 +1,15 @@
+queue_rules:
+  - name: default
+    merge_method: squash
+    conditions:
+      - check-success=test
+
+pull_request_rules:
+  - name: squash and merge updatecli PRs after CI passes
+    conditions:
+      - label=automation
+      - head~=^updatecli
+      - -conflict
+    actions:
+      queue:
+        name: default
