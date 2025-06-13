@@ -24,3 +24,10 @@ pull_request_rules:
     actions:
       queue:
         name: default
+  - name: rebase pull requests
+    conditions:
+      - files~=^(README.md|.mergify.yml|docs/versions.yml)$
+      - head~=^updatecli_.*
+      - "#check-failure>0"
+    actions:
+      rebase:
