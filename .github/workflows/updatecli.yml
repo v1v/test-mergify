@@ -1,0 +1,23 @@
+name: updatecli
+
+on:
+  workflow_dispatch:
+
+# limit the access of the generated GITHUB_TOKEN
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: elastic/oblt-actions/updatecli/run@v1
+        with:
+          command: apply --config updatecli/updatecli.d/versions.yml --values updatecli/values.d/scm.yml
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

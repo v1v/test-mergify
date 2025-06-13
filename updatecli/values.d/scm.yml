@@ -1,0 +1,5 @@
+scm:
+  enabled: true
+  owner: v1v
+  repository: test-mergify
+  branch: main

@@ -1,0 +1,50 @@
+---
+name: Bump versions in the docs/versions.yml
+
+scms:
+  githubConfig:
+    kind: github
+    spec:
+      user: '{{ requiredEnv "GITHUB_ACTOR" }}'
+      username: '{{ requiredEnv "GITHUB_ACTOR" }}'
+      owner: '{{ .scm.owner }}'
+      repository: '{{ .scm.repository }}'
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      commitusingapi: true
+      branch: '{{ .scm.branch }}'
+      force: false
+
+actions:
+  elastic-agent:
+    kind: github/pullrequest
+    scmid: githubConfig
+    spec:
+      automerge: false
+      labels:
+        - dependencies
+      title: '[Automation] Bump EDOT versions'
+
+sources:
+  latest-edot-android-version:
+    name: Get latest release version for the apm-agent-android
+    kind: githubrelease
+    transformers:
+      - trimprefix: v
+    spec:
+      owner: elastic
+      repository: apm-agent-android
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      username: '{{ requiredEnv "GITHUB_ACTOR" }}'
+      versionfilter:
+        kind: latest
+
+targets:
+  update-docs-docset-android:
+    name: 'Update docs/versions.yml edot-android {{ source "latest-edot-android-version" }}'
+    scmid: githubConfig
+    sourceid: latest-edot-android-version
+    kind: file
+    spec:
+      file: docs/versions.yml
+      matchpattern: '(edot-android-version): (.+)'
+      replacepattern: '$1: {{ source "latest-edot-android-version" }}'

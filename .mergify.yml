@@ -5,11 +5,24 @@ queue_rules:
       - check-success=test
 
 pull_request_rules:
+  - name: automatic approval for updatecli pull requests
+    conditions:
+      - check-success=test
+      - files~=^(README.md|.mergify.yml)$
+      - head~=^updatecli_.*
+    actions:
+      review:
+        type: APPROVE
+        message: Automatically approving mergify
+
   - name: squash and merge updatecli PRs after CI passes
     conditions:
-      - label=automation
-      - head~=^updatecli
+      - author=github-actions[bot]
+      - check-success=test
+      - files~=^(README.md|.mergify.yml|docs/versions.yml)$
+      - head~=^updatecli_.*
       - -conflict
+      - "#approved-reviews-by>=1"
     actions:
       queue:
         name: default
